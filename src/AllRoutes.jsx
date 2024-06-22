@@ -8,6 +8,7 @@ import DisplayQuestions from "./pages/questions/DisplayQuestions";
 import Tags from "./pages/tags/Tags";
 import Users from "./pages/users/Users";
 import UserProfile from "./pages/users/UserProfile";
+import SimilarQuestions from './pages/questions/SimilarQuestions';
 
 function AllRoutes() {
   return (
@@ -27,6 +28,7 @@ function AllRoutes() {
       <Route path="/Tags" element={<Tags />} />
       <Route path="/Users" element={<Users />} />
       <Route path="/Users/:id" element={<UserProfile />} />
+      <Route path="/similar-questions/:id" component={SimilarQuestions} />
     </Routes>
   );
 }

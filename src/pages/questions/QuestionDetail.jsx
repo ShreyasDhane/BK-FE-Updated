@@ -1,9 +1,10 @@
+import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import copy from "copy-to-clipboard";
 
-import "./Questions.css";
+import "./Questions.css"; // Ensure this imports your CSS file for styling
 import Avatar from "../../components/avatar/Avatar";
 import {
   deleteQuestion,
@@ -12,7 +13,6 @@ import {
 } from "../../actions/Question.action";
 import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import DisplayAnswer from "./DisplayAnswer";
-import { useState } from "react";
 
 function QuestionDetail() {
   const [userAnswer, setUserAnswer] = useState("");
@@ -24,6 +24,11 @@ function QuestionDetail() {
   const dispatch = useDispatch();
   const location = useLocation();
   const url = "https://stackoverflow-clone-mralam.vercel.app";
+
+  useEffect(() => {
+    // Fetch or dispatch action to load question data based on `id`
+    // Example: dispatch(fetchQuestion(id));
+  }, [id, dispatch]);
 
   const res = questionsList?.data?.filter((question) => question?._id === id);
 
@@ -44,7 +49,7 @@ function QuestionDetail() {
             answerBody: userAnswer,
             userAnswered: User?.result?.name,
             userId: User?.result?._id,
-          })
+          }),
         );
         setUserAnswer("");
       }
@@ -53,7 +58,7 @@ function QuestionDetail() {
 
   const handleShare = () => {
     copy(url + location?.pathname);
-    alert("copied URL: " + url + location?.pathname);
+    alert("Copied URL: " + url + location?.pathname);
   };
 
   const handleDelete = (id) => {
@@ -63,9 +68,32 @@ function QuestionDetail() {
   const handleUpVote = (id) => {
     dispatch(voteQuestion(id, "upVote", User?.result?._id));
   };
+
   const handleDownVote = (id) => {
     dispatch(voteQuestion(id, "downVote", User?.result?._id));
   };
+
+  const handleSimilarQuestions = () => {
+    navigate(`/similar-questions/${id}`);
+  };
+
+  // Function to filter and get similar questions based on tags
+  const getSimilarQuestions = () => {
+    if (!res || !res[0]) return [];
+
+    const currentQuestionTags = res[0].questionTags;
+    if (!currentQuestionTags || currentQuestionTags.length === 0) return [];
+
+    return questionsList?.data?.filter((question) => {
+      // Check if the question has at least one common tag with the current question
+      return (
+        question._id !== id &&
+        question.questionTags.some((tag) => currentQuestionTags.includes(tag))
+      );
+    });
+  };
+
+  const similarQuestions = getSimilarQuestions();
 
   return (
     <div className="question-details-page">
@@ -172,6 +200,12 @@ function QuestionDetail() {
                   </form>
                 </section>
                 <p>
+                  <button
+                    onClick={handleSimilarQuestions}
+                    className="similar-questions-btn"
+                  >
+                    Similar Questions
+                  </button>{" "}
                   Browse other Question tagged.
                   {questionTags?.map((tag) => (
                     <Link to="/Tags" key={tag} className="ans-tags">
@@ -181,7 +215,10 @@ function QuestionDetail() {
                   or{" "}
                   <Link
                     to="/AskQuestion"
-                    style={{ textDecoration: "none", color: "#009dff" }}
+                    style={{
+                      textDecoration: "none",
+                      color: "#009dff",
+                    }}
                   >
                     ask your own question.
                   </Link>
@@ -189,6 +226,33 @@ function QuestionDetail() {
               </div>
             );
           })}
+
+          {/* Render similar questions */}
+          {similarQuestions.length > 0 && (
+            <section className="similar-questions-container">
+              <h2>Similar Questions</h2>
+              {similarQuestions.map((question) => (
+                <div key={question._id} className="similar-question">
+                  <h3>{question.questionTitle}</h3>
+                  <div style={{ width: "100%" }}>
+                    <p className="question-body"> {question.questionBody}</p>
+                    <p className="question-details-tags">
+                      Tags: {question.questionTags.join(", ")}
+                    </p>
+                    <p>
+                      Asked {moment(question.askedOn).fromNow()} by{" "}
+                      <Link
+                        to={`/Users/${question.userId}`}
+                        style={{ color: "#0086d8" }}
+                      >
+                        {question.userPosted}
+                      </Link>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
         </>
       )}
     </div>

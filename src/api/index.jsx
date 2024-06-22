@@ -56,3 +56,5 @@ export const fetchAllUsers = () => API.get("/user/getAllUsers");
 
 export const updateProfile = (id, updateData) =>
   API.patch(`/user/update/${id}`, updateData);
+
+  
