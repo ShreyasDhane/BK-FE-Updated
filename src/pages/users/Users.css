@@ -1,0 +1,30 @@
+.userList-container {
+    padding: 30px 0px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.user-profile-link{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-decoration: none;
+    color: black;
+    gap: 10px;
+}
+
+.user-profile-link h3{
+    padding: 10px;
+    height: 10px;
+    width: 10px;
+    background-color: #d3d3d3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+   
+}
+
+.user-profile h5{
+    margin: 0px 10px;
+}
